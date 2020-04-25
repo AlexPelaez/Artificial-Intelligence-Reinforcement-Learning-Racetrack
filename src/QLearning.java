@@ -15,7 +15,7 @@ public class QLearning {
     int numberOfCompletions = 0;
 
 
-    // time trial
+    // time trial 
 
 
     public void runTrack(int numberOfEpisodes, int wallMode){
