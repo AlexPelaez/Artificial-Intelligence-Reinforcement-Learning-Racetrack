@@ -40,4 +40,7 @@ public class Racetrack {
         }
     }
 
+    public char[][] getRacetrack() {
+        return racetrack;
+    }
 }
