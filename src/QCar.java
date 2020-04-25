@@ -19,18 +19,13 @@ public class QCar {
 
     private boolean changeVelocity(int aI, int aJ){
         // set new velocities
-        System.out.println("aI: "+aI);
-        System.out.println("aJ: "+aJ);
         int tempiV = iVel+aI;
         int tempjV = jVel+aJ;
         if(tempjV > 5 || tempjV < -5 || tempiV > 5 || tempiV < -5){
             return false;
         } else {
-            System.out.println("changing velocity");
             iVel += aI;
             jVel += aJ;
-            System.out.println("iVel: "+iVel);
-            System.out.println("jVel: "+jVel);
         }
         return true;
     }
@@ -67,6 +62,14 @@ public class QCar {
 
     public int getJ() {
         return j;
+    }
+
+    public int getiVel(){
+        return iVel;
+    }
+
+    public int getjVel(){
+        return jVel;
     }
 
     public void setI(int newI){
