@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by Alex on 4/25/20.
@@ -13,25 +12,43 @@ public class QLearning {
         this.track = track;
     }
 
-    public void startLearning(int numberOfEpisodes){
-        ArrayList<int[]> startIndexes = findStartIndicies();
+    public void startLearning(int numberOfEpisodes, int wallMode){
+        q = new double[track.length][track[0].length][9];
+        ArrayList<int[]> startIndexes = findStartIndices();
+        ArrayList<int[]> finishIndexes = findFinishIndices();
         initializeQ();
         initializeActions();
-        for (int e = 0; e < numberOfEpisodes; e++) {
+        for (int e = 0; e < 1; e++) {
             boolean crossedFinish = false;
             int randomStart = (int)(Math.random()*startIndexes.size());
-            Car car = new Car(startIndexes.get(randomStart)[0], startIndexes.get(randomStart)[1]);
+            QCar car = new QCar(startIndexes.get(randomStart)[0], startIndexes.get(randomStart)[1], track);
             while(crossedFinish == false){
-                car.takeAction(actions[findBestAction(car.getI(), car.getJ())]);
-                printTrack(car.getX(), car.getY());
+                int currentCarI = car.getI();
+                int currentCarJ = car.getJ();
+                int actionToTake = findBestAction(currentCarI, currentCarJ);
+                double probability = Math.random();
+                if(probability >= 0.8){
+                    System.out.println("Not taking the best action");
+                    actionToTake = (int)(Math.random()*9);
+                }
+                System.out.println("Action to take: "+actionToTake);
+                int taken = car.takeAction(actions[actionToTake]);
+                if(taken != 0){
+                    q[currentCarI][currentCarJ][actionToTake] = 0;
+                } if(taken == -1 && wallMode == -1) {
+                    // here is where we will implement hit-wall -> back to start
+                    car.setI(3);
+                    car.setJ(33);
+                    car.setIVel(0);
+                    car.setJVel(0);
+                } else {
 
-
-
-
-
-
-
-
+                }
+                printTrack(car.getI(), car.getJ());
+                if(track[car.getI()][car.getJ()] == 'F') {
+                    crossedFinish = true;
+                    System.out.println("were finished!");
+                }
             }
         }
     }
@@ -68,7 +85,6 @@ public class QLearning {
     }
 
     private void initializeQ(){
-        q = new double[track.length][track[0].length][9];
         for (int i = 0; i < q.length; i++) {
             for (int j = 0; j < q[0].length; j++) {
                 if(track[i][j] == 'F'){
@@ -85,7 +101,7 @@ public class QLearning {
         }
     }
 
-    private ArrayList<int[]> findStartIndicies(){
+    private ArrayList<int[]> findStartIndices(){
         ArrayList<int[]> startIndexesList = new ArrayList<>();
         for (int i = 0; i < track.length; i++) {
             for (int j = 0; j < track[0].length; j++) {
@@ -94,10 +110,23 @@ public class QLearning {
                     startIndexesList.add(temp);
                 }
             }
-
         }
 
         return startIndexesList;
+    }
+
+    private ArrayList<int[]> findFinishIndices(){
+        ArrayList<int[]> finishIndexesList = new ArrayList<>();
+        for (int i = 0; i < track.length; i++) {
+            for (int j = 0; j < track[0].length; j++) {
+                if(track[i][j] == 'F'){
+                    int[] temp = {i, j};
+                    finishIndexesList.add(temp);
+                }
+            }
+        }
+
+        return finishIndexesList;
     }
 
     private void printTrack(int i, int j){
@@ -110,6 +139,16 @@ public class QLearning {
                 }
             }
             System.out.println();
+        }
+    }
+
+    private void printQ() {
+        for (int i = 0; i < q.length; i++) {
+            for (int j = 0; j < q[0].length; j++) {
+                for (int k = 0; k < 9; k++) {
+                    System.out.println(q[i][j][k]);
+                }
+            }
         }
     }
 

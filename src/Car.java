@@ -41,27 +41,4 @@ public class Car {
         this.yVel = yVel;
     }
 
-
-
-
-
-
-    // used for QLearning
-    public Car(int x, int y){
-        this.x = x;
-        this.y = y;
-    }
-
-
-    public void takeAction(Action a) {
-
-    }
-
-    public int getI() {
-        return x;
-    }
-
-    public int getJ() {
-        return y;
-    }
 }

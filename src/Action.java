@@ -15,4 +15,14 @@ public class Action {
     public int getyAcceleration() {
         return yAcceleration;
     }
+
+
+    // used for Q learning
+    public int getIAcceleration() {
+        return xAcceleration;
+    }
+
+    public int getJAcceleration() {
+        return yAcceleration;
+    }
 }
