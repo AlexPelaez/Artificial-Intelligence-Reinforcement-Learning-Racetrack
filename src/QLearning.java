@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * Created by Alex on 4/25/20.
  */
-public class QLearning {
+public class QLearning extends LearningBase {
     private char[][] track;
     private double[][][][][] q;
     private Action[] actions;
@@ -15,12 +15,10 @@ public class QLearning {
     int numberOfCompletions = 0;
 
 
-    // time trial 
-
-
+    // time trial
     public void runTrack(int numberOfEpisodes, int wallMode){
-        ArrayList<int[]> startIndexes = findStartIndices();
-        ArrayList<int[]> finishIndexes = findFinishIndices();
+        ArrayList<int[]> startIndexes = findStartIndices(track);
+        ArrayList<int[]> finishIndexes = findFinishIndices(track);
         for (int e = 0; e < numberOfEpisodes; e++) {
             boolean crossedFinish = false;
             int trackSteps = 0;
@@ -36,11 +34,14 @@ public class QLearning {
                 } if(currentCarJVel < 0){
                     currentCarJVel = (-1)*currentCarJVel+5;
                 }
-                int actionToTake = findBestAction(trackCar.getI(), trackCar.getJ(), currentCarIVel, currentCarJVel);
+                int actionToTake = findBestAction(q, trackCar.getI(), trackCar.getJ(), currentCarIVel, currentCarJVel);
                 int taken = trackCar.takeAction(actions[actionToTake]);
                 if(wallMode == -1 && taken == -1){
                     trackCar.setI(startIndexes.get(randomStart)[0]);
                     trackCar.setJ(startIndexes.get(randomStart)[1]);
+                    trackCar.setIVel(0);
+                    trackCar.setJVel(0);
+                } else if(wallMode == -1){
                     trackCar.setIVel(0);
                     trackCar.setJVel(0);
                 }
@@ -50,7 +51,7 @@ public class QLearning {
 
 
                 if(track[trackCar.getI()][trackCar.getJ()] == 'F') {
-                    printTrack(trackCar.getI(), trackCar.getJ());
+                    printTrack(track, trackCar.getI(), trackCar.getJ());
                     crossedFinish = true;
                     System.out.println("Car was sucsessfull!!!!");
                     System.out.println("the number of steps was: " + trackSteps);
@@ -66,10 +67,10 @@ public class QLearning {
 
     public void startLearning(int numberOfEpisodes, int wallMode){
         q = new double[track.length][track[0].length][11][11][9];
-        ArrayList<int[]> startIndexes = findStartIndices();
-        ArrayList<int[]> finishIndexes = findFinishIndices();
+        ArrayList<int[]> startIndexes = findStartIndices(track);
+        ArrayList<int[]> finishIndexes = findFinishIndices(track);
         initializeQ();
-        initializeActions();
+        actions = initializeActions();
         for (int e = 0; e < numberOfEpisodes; e++) {
             System.out.println(e);
             boolean crossedFinish = false;
@@ -92,7 +93,7 @@ public class QLearning {
                     currentCarJVel = (-1)*currentCarJVel+5;
                 }
 
-                int actionToTake = findBestAction(currentCarI, currentCarJ, currentCarIVel, currentCarJVel);
+                int actionToTake = findBestAction(q, currentCarI, currentCarJ, currentCarIVel, currentCarJVel);
 
                 double probability = Math.random();
                 if(probability >= 0.7){
@@ -100,7 +101,7 @@ public class QLearning {
                 }
                 int taken = car.takeAction(actions[actionToTake]);
 
-                    // if move was not taken because
+                // if move was not taken because
                 if(taken != 0){
                     q[currentCarI][currentCarJ][currentCarIVel][currentCarIVel][actionToTake] = 0;
                 } if(taken == -1 && wallMode == -1) {
@@ -136,7 +137,7 @@ public class QLearning {
                             ((1-learningRate)*q[currentCarI][currentCarJ][currentCarIVel]
                                     [currentCarIVel][actionToTake])+ learningRate*(reward + dr*(q[car.getI()]
                                     [car.getJ()][tempCurrentCarIVel][tempCurrentCarJVel]
-                                    [findBestAction(car.getI(), car.getJ(), tempCurrentCarIVel, tempCurrentCarJVel)]));
+                                    [findBestAction(q, car.getI(), car.getJ(), tempCurrentCarIVel, tempCurrentCarJVel)]));
 //                    System.out.println("here "+ q[currentCarI][currentCarJ][currentCarIVel][currentCarIVel][actionToTake]);
                 }
 //                System.out.println("VelocityI: "+car.getiVel());
@@ -144,7 +145,7 @@ public class QLearning {
 //                printTrack(car.getI(), car.getJ());
 
                 if(track[car.getI()][car.getJ()] == 'F') {
-                    printTrack(car.getI(), car.getJ());
+                    printTrack(track, car.getI(), car.getJ());
                     crossedFinish = true;
                     System.out.println("were finished!");
                     numberOfCompletions++;
@@ -152,37 +153,6 @@ public class QLearning {
             }
         }
         System.out.println("We completed the track # of times : " + numberOfCompletions);
-    }
-
-
-
-
-
-
-
-    private int findBestAction(int currentCarI, int currentCarJ, int currentCarIVel, int currentCarJVel) {
-        int currentIndexOfBestAction = 0;
-        double currentBestAction = 0;
-        for (int i = 0; i < 9; i++) {
-            if(currentBestAction < q[currentCarI][currentCarJ][currentCarIVel][currentCarJVel][i]){
-                currentBestAction = q[currentCarI][currentCarJ][currentCarIVel][currentCarJVel][i];
-                currentIndexOfBestAction = i;
-            }
-        }
-        return currentIndexOfBestAction;
-    }
-
-    private void initializeActions(){
-        actions = new Action[9];
-        actions[0] = new Action(0,0);
-        actions[1] = new Action(0,1);
-        actions[2] = new Action(0,-1);
-        actions[3] = new Action(1,0);
-        actions[4] = new Action(1,1);
-        actions[5] = new Action(1,-1);
-        actions[6] = new Action(-1,0);
-        actions[7] = new Action(-1,1);
-        actions[8] = new Action(-1,-1);
     }
 
     private void initializeQ(){
@@ -206,56 +176,4 @@ public class QLearning {
             }
         }
     }
-
-    private ArrayList<int[]> findStartIndices(){
-        ArrayList<int[]> startIndexesList = new ArrayList<>();
-        for (int i = 0; i < track.length; i++) {
-            for (int j = 0; j < track[0].length; j++) {
-                if(track[i][j] == 'S'){
-                    int[] temp = {i, j};
-                    startIndexesList.add(temp);
-                }
-            }
-        }
-
-        return startIndexesList;
-    }
-
-    private ArrayList<int[]> findFinishIndices(){
-        ArrayList<int[]> finishIndexesList = new ArrayList<>();
-        for (int i = 0; i < track.length; i++) {
-            for (int j = 0; j < track[0].length; j++) {
-                if(track[i][j] == 'F'){
-                    int[] temp = {i, j};
-                    finishIndexesList.add(temp);
-                }
-            }
-        }
-
-        return finishIndexesList;
-    }
-
-    private void printTrack(int i, int j){
-        for(int a = 0; a < track.length; a++){
-            for(int b = 0; b < track[0].length; b++){
-                if(a == i && b == j) {
-                    System.out.print('C');
-                } else {
-                    System.out.print(track[a][b]);
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    private void printQ() {
-        for (int i = 0; i < q.length; i++) {
-            for (int j = 0; j < q[0].length; j++) {
-                for (int k = 0; k < 9; k++) {
-                    System.out.println(q[i][j][k]);
-                }
-            }
-        }
-    }
-
 }
