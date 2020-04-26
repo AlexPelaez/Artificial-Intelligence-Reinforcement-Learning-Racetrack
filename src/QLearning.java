@@ -14,53 +14,6 @@ public class QLearning extends LearningBase {
 
     int numberOfCompletions = 0;
 
-
-    // time trial
-    public void runTrack(int numberOfEpisodes, int wallMode){
-        ArrayList<int[]> startIndexes = findStartIndices(track);
-        ArrayList<int[]> finishIndexes = findFinishIndices(track);
-        for (int e = 0; e < numberOfEpisodes; e++) {
-            boolean crossedFinish = false;
-            int trackSteps = 0;
-            while(crossedFinish == false){
-
-                trackSteps++;
-                int randomStart = (int)(Math.random()*startIndexes.size());
-                QCar trackCar = new QCar(startIndexes.get(randomStart)[0], startIndexes.get(randomStart)[1], track);
-                int currentCarIVel = trackCar.getiVel();
-                int currentCarJVel = trackCar.getjVel();
-                if(currentCarIVel < 0){
-                    currentCarIVel = (-1)*currentCarIVel+5;
-                } if(currentCarJVel < 0){
-                    currentCarJVel = (-1)*currentCarJVel+5;
-                }
-                int actionToTake = findBestAction(q, trackCar.getI(), trackCar.getJ(), currentCarIVel, currentCarJVel);
-                int taken = trackCar.takeAction(actions[actionToTake]);
-                if(wallMode == -1 && taken == -1){
-                    trackCar.setI(startIndexes.get(randomStart)[0]);
-                    trackCar.setJ(startIndexes.get(randomStart)[1]);
-                    trackCar.setIVel(0);
-                    trackCar.setJVel(0);
-                } else if(wallMode == -1){
-                    trackCar.setIVel(0);
-                    trackCar.setJVel(0);
-                }
-                if(trackSteps == maxSteps){
-                    break;
-                }
-
-
-                if(track[trackCar.getI()][trackCar.getJ()] == 'F') {
-                    printTrack(track, trackCar.getI(), trackCar.getJ());
-                    crossedFinish = true;
-                    System.out.println("Car was sucsessfull!!!!");
-                    System.out.println("the number of steps was: " + trackSteps);
-                }
-            }
-        }
-
-    }
-
     public void loadTrack(char[][] track){
         this.track = track;
     }
@@ -175,5 +128,9 @@ public class QLearning extends LearningBase {
 
             }
         }
+    }
+
+    public double[][][][][] getModel(){
+        return q;
     }
 }

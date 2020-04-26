@@ -1,3 +1,5 @@
+import java.sql.Time;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -12,6 +14,7 @@ public class Main {
         QLearning ql = new QLearning();
         ql.loadTrack(r1.getRacetrack());
         ql.startLearning(100000, 0);
-        ql.runTrack(1000, 0);
+        Timetrial tt = new Timetrial(ql.getModel(), r1.getRacetrack(), 0);
+        tt.runTrack(20, 0);
     }
 }
