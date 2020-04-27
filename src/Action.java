@@ -8,16 +8,6 @@ public class Action {
 
     }
 
-    public int getxAcceleration() {
-        return xAcceleration;
-    }
-
-    public int getyAcceleration() {
-        return yAcceleration;
-    }
-
-
-    // used for Q learning
     public int getIAcceleration() {
         return xAcceleration;
     }

@@ -22,7 +22,7 @@ public class QLearning extends LearningBase {
         q = new double[track.length][track[0].length][11][11][9];
         ArrayList<int[]> startIndexes = findStartIndices(track);
         ArrayList<int[]> finishIndexes = findFinishIndices(track);
-        initializeQ();
+        q = initializeQ(track, q);
         actions = initializeActions();
         for (int e = 0; e < numberOfEpisodes; e++) {
             System.out.println(e);
@@ -108,27 +108,6 @@ public class QLearning extends LearningBase {
         System.out.println("We completed the track # of times : " + numberOfCompletions);
     }
 
-    private void initializeQ(){
-        for (int i = 0; i < q.length; i++) {
-            for (int j = 0; j < q[0].length; j++) {
-                for (int a = 0; a < 11; a++) {
-                    for (int b = 0; b < 11; b++) {
-                        if(track[i][j] == 'F'){
-                            for (int k = 0; k < 9; k++) {
-                                q[i][j][a][b][k] = 0;
-                            }
-
-                        } else {
-                            for (int k = 0; k < 9; k++) {
-                                q[i][j][a][b][k] = Math.random();
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-    }
 
     public double[][][][][] getModel(){
         return q;

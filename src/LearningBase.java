@@ -71,4 +71,28 @@ public abstract class LearningBase {
         actions[8] = new Action(-1,-1);
         return actions;
     }
+
+    public double[][][][][] initializeQ(char[][] track, double[][][][][]model){
+        for (int i = 0; i < model.length; i++) {
+            for (int j = 0; j < model[0].length; j++) {
+                for (int a = 0; a < 11; a++) {
+                    for (int b = 0; b < 11; b++) {
+                        if(track[i][j] == 'F'){
+                            for (int k = 0; k < 9; k++) {
+                                model[i][j][a][b][k] = 0;
+                            }
+
+                        } else {
+                            for (int k = 0; k < 9; k++) {
+                                model[i][j][a][b][k] = Math.random();
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        return model;
+    }
+
 }
