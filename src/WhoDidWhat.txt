@@ -1,0 +1,11 @@
+This file states who wrote what code:
+
+Basic Project setup:
+Alexander Pelaez
+Ethan Miller
+
+Value Iteration and associated timetrial:
+Ethan Miller
+
+Q Learning and associated timetrial:
+Alexander Pelaez

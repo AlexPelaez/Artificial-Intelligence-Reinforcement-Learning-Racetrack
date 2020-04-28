@@ -7,8 +7,8 @@ public class QLearning extends LearningBase {
     private char[][] track;
     private double[][][][][] q;
     private Action[] actions;
-    double learningRate = .2;
-    double dr = .9;
+    double learningRate = .3;
+    double dr = .8;
     int reward = -1;
     int maxSteps = 500;
 
