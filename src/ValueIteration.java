@@ -7,10 +7,12 @@ public class ValueIteration extends LearningBase {
     private double[][][][][] q;
     private double[][][][]v;
     private Action[] actions;
-    double learningRate = .2;
     double dr = .9;
-    int reward = -1;
-    int maxSteps = 500;
+    int reward;
+    int wallMode;
+
+    int learningStep = 0;
+
 
     int numberOfCompletions = 0;
 
@@ -18,7 +20,8 @@ public class ValueIteration extends LearningBase {
         this.track = track;
     }
 
-    public void startLearning(int numOfEpisodes, int wallMode){
+    public void startLearningValueIteration(int numOfEpisodes, int wallMode){
+        this.wallMode = wallMode;
         q = new double[track.length][track[0].length][11][11][9];
         v = new double[track.length][track[0].length][11][11];
         q = initializeQ(track,q);
@@ -26,7 +29,8 @@ public class ValueIteration extends LearningBase {
         actions = initializeActions();
 
 
-        for (int e = 0; e < numOfEpisodes; e++) {
+        while(learningStep < numOfEpisodes){
+            learningStep++;
 
            double[][][][]prev_v = new double[track.length][track[0].length][11][11];
 
@@ -41,12 +45,8 @@ public class ValueIteration extends LearningBase {
                 }
             }
 
-
-
-
-
-            for (int i = 0; i < track.length ; i++) {//For loop looping through all states
-                for (int j = 0; j < track[0].length ; j++) {
+            for (int i = 0; i < q.length ; i++) {//For loop looping through all states
+                for (int j = 0; j < q[0].length ; j++) {
                     for (int vi = 0; vi < 11; vi++) {
                         for (int vj = 0; vj < 11; vj++) {
 
@@ -55,7 +55,16 @@ public class ValueIteration extends LearningBase {
                                 continue;
                             }
 
+                            double bestVal = Double.NEGATIVE_INFINITY;
+
                             for (int k = 0; k < actions.length; k++) {//for loop looping through all actions
+
+                                if(track[i][j] == 'F'){//Goal states have a reward of 0; every other state has a reward of -1
+                                    reward = 0;
+
+                                }else{
+                                    reward = -1;
+                                }
 
                                 //data structure to hold our next state for the one step look ahead.
                                 //sPrime[0] = newi;
@@ -74,6 +83,7 @@ public class ValueIteration extends LearningBase {
 
                                 double value = (valAccelerationSuccess * 0.8) + (valAccelerationFail * 0.2);
 
+                                q[i][j][vi][vj][k] = reward + (dr * value);
                             }
 
                         }
@@ -125,7 +135,6 @@ public class ValueIteration extends LearningBase {
         newStart[0] = starti;
         newStart[1] = startj;
         return  newStart;
-
     }
 
     //calculate the next position
@@ -199,11 +208,65 @@ public class ValueIteration extends LearningBase {
         return newNew;
     }
 
+    private void dotimeTrial(){
+        int numSteps = 0;
+        
+        char [][]printableTrack = new char[track.length][track[0].length];
+
+        for (int i = 0; i < track.length ; i++) {// Copy track to printable track
+            for (int j = 0; j <track[0].length ; j++) {
+                printableTrack[i][j] = track[i][j];
+            }
+            
+        }
+
+        int []start = getNewStart();
+
+        int posI = start[0];
+        int posJ = start[1];
+
+        int iVel = 0;
+        int jVel = 0;
+
+
+        while(numSteps < 500){
+            System.out.println(numSteps);
+            numSteps++;
+
+            double bestAction = Double.NEGATIVE_INFINITY;
+            int move = -1;
+
+            for (int i = 0; i < printableTrack.length ; i++) {// Copy track to printable track
+                for (int j = 0; j <printableTrack[0].length ; j++) {
+                    System.out.print(printableTrack[i][j]);
+                }
+                System.out.println();
+
+            }
+
+            for (int k = 0; k < actions.length; k++) {
+                double action = q[posI][posJ][iVel][jVel][k];
+
+                if (action > bestAction){
+                    bestAction = action;
+                    move = k;
+
+                }
+            }
 
 
 
+            int [] nextMove = getNextAction(posI, posJ, iVel, jVel,actions[move] .getIAcceleration(),actions[move].getJAcceleration(), wallMode);
 
+            posI = nextMove[0];
+            posJ = nextMove[1];
+            iVel = nextMove[2];
+            jVel = nextMove[3];
+            
+        }
+        
 
+    }
 
 
 }
