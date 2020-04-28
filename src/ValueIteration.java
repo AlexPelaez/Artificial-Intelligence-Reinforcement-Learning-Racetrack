@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class ValueIteration extends LearningBase {
 
@@ -45,17 +46,15 @@ public class ValueIteration extends LearningBase {
                 }
             }
 
-            for (int i = 0; i < q.length ; i++) {//For loop looping through all states
-                for (int j = 0; j < q[0].length ; j++) {
+            for (int i = 0; i < track.length ; i++) {//For loop looping through all states
+                for (int j = 0; j < track[0].length ; j++) {
                     for (int vi = 0; vi < 11; vi++) {
                         for (int vj = 0; vj < 11; vj++) {
 
-                            if (track[i][j] == '#'){
+                            if (track[i][j] == '#'){//train not to hit walls
                                 v[i][j][vi][vj] = -10;
                                 continue;
                             }
-
-                            double bestVal = Double.NEGATIVE_INFINITY;
 
                             for (int k = 0; k < actions.length; k++) {//for loop looping through all actions
 
@@ -70,32 +69,56 @@ public class ValueIteration extends LearningBase {
                                 //sPrime[0] = newi;
                                 //sPrime[1] = newj;
                                 //sPrime[2] = newvi;
-                                //sprime[3] = newvj;
-                                int[] sPrimeSuccess = new int[4];//Calculate value for successful acceleration
-                                sPrimeSuccess = getNextAction(i, j, vi, vj, actions[k].getIAcceleration(),actions[k].getJAcceleration(), wallMode);
+                                //sprime[3] = newvj;//Calculate value for successful acceleration
+//                                System.out.println("I: " + i + " J: " + j + " VI: " + vi + " VJ: " + vj + " ai: " + actions[k].getIAcceleration() + " aj: " + actions[k].getJAcceleration());
+                                int []sPrimeSuccess = getNextAction(i, j, vi, vj, actions[k].getIAcceleration(),actions[k].getJAcceleration(), wallMode);
+
+                                //Debugging out of bounds error
+//                                System.out.println(sPrimeSuccess[0]);
+//                                System.out.println(sPrimeSuccess[1]);
+//                                System.out.println(sPrimeSuccess[2]);
+//                                System.out.println(sPrimeSuccess[3];
+
+
+
 
                                 double valAccelerationSuccess = prev_v[sPrimeSuccess[0]][sPrimeSuccess[1]][sPrimeSuccess[2]][sPrimeSuccess[3]];
 
                                 int[] sPrimeFail = new int[4];//Calculate value for failed acceleration
                                 sPrimeFail = getNextAction(i, j, vi, vj, 0,0, wallMode);
 
-                                double valAccelerationFail = prev_v[sPrimeSuccess[0]][sPrimeSuccess[1]][sPrimeSuccess[2]][sPrimeSuccess[3]];
+                                double valAccelerationFail = prev_v[sPrimeFail[0]][sPrimeFail[1]][sPrimeFail[2]][sPrimeFail[3]];
 
                                 double value = (valAccelerationSuccess * 0.8) + (valAccelerationFail * 0.2);
 
                                 q[i][j][vi][vj][k] = reward + (dr * value);
+
+
                             }
+                            int bestAction = findBestAction(q, i, j, vi, vj);
+                            v[i][j][vi][vj] = q[i][j][vi][vj][bestAction];
 
                         }
-
-
-
                     }
 
 
                 }
 
             }
+            for (int i = 0; i < track.length ; i++) {//For loop looping through all states
+                for (int j = 0; j < track.length; j++) {
+                    if(track[i][j] == 'F'){
+                        for (int vi = 0; vi < 11; vi++) {
+                            for (int vj = 0; vj < 11; vj++) {
+                                v[i][j][vi][vj] = 0;
+
+                            }
+                        }
+
+                    }
+                }
+            }
+
 
 
 
@@ -103,6 +126,8 @@ public class ValueIteration extends LearningBase {
 
 
     }
+
+
     public void initializeV(){
         for (int i = 0; i < track.length; i++) {
             for (int j = 0; j < track[0].length; j++) {
@@ -126,6 +151,7 @@ public class ValueIteration extends LearningBase {
 
     }
 
+
     public int[] getNewStart(){
         int newStart[] = new int[2];
         ArrayList<int[]> startIndexes = findStartIndices(track);
@@ -137,9 +163,18 @@ public class ValueIteration extends LearningBase {
         return  newStart;
     }
 
+
     //calculate the next position
     private int[] getNextAction(int previ, int prevj, int prevvi, int prevvj, int ai, int aj, int crash){
         int [] newNew = new int[4];
+
+        if (prevvi > 5){
+            int tempPrevVI = (previ - 5) * (-1);
+        }
+        if (prevvj > 5){
+            prevvj = (prevj - 5) * (-1);
+        }
+
         double accelerationFactor = Math.random();
 
         if (accelerationFactor > 0.8){
@@ -169,8 +204,12 @@ public class ValueIteration extends LearningBase {
         int newi = previ + newvi;
         int newj = prevj + newvj;
 
+
+
+
         try {
-            if (track[newi][newj] != '.') {//a crash has occurred
+            if (track[newi][newj] != '.' && track[newi][newj] != 'S' && track[newi][newj] != 'F' ) {//a crash has occurred
+//                System.out.println("crash occurred");
                 if (crash != -1) {//if crash does not restart car
                     newi = previ;
                     newj = prevj;
@@ -179,12 +218,15 @@ public class ValueIteration extends LearningBase {
                     int startFresh[] = getNewStart();
                     newi = startFresh[0];
                     newj = startFresh[1];
+                    newvi = 0;
+                    newvj = 0;
 
                 }
-                newvi = 0;
-                newvj = 0;
+
+
             }
         }catch (IndexOutOfBoundsException e){
+//            System.out.println("tried to travel out of bounds");
             if (crash != -1) {//if crash does not restart car
                 newi = previ;
                 newj = prevj;
@@ -193,11 +235,23 @@ public class ValueIteration extends LearningBase {
                 int startFresh[] = getNewStart();
                 newi = startFresh[0];
                 newj = startFresh[1];
+                newvi = 0;
+                newvj = 0;
+
+
 
             }
-            newvi = 0;
-            newvj = 0;
 
+
+
+        }
+
+        if(newvi < 0){
+            newvi =(-1) *  newvi + 5;
+
+        }
+        if(newvj< 0){
+            newvj =(-1) *  newvj + 5;
 
         }
         newNew[0] = newi;
@@ -205,13 +259,15 @@ public class ValueIteration extends LearningBase {
         newNew[2] = newvi;
         newNew[3] = newvj;
 
+
         return newNew;
     }
 
-    private void dotimeTrial(){
+    public void runTimeTrial(){
         int numSteps = 0;
         
         char [][]printableTrack = new char[track.length][track[0].length];
+
 
         for (int i = 0; i < track.length ; i++) {// Copy track to printable track
             for (int j = 0; j <track[0].length ; j++) {
@@ -227,45 +283,34 @@ public class ValueIteration extends LearningBase {
 
         int iVel = 0;
         int jVel = 0;
+        int stopcounter = 0;
 
 
-        while(numSteps < 500){
-            System.out.println(numSteps);
+        while(numSteps < 1000){
             numSteps++;
 
-            double bestAction = Double.NEGATIVE_INFINITY;
-            int move = -1;
 
-            for (int i = 0; i < printableTrack.length ; i++) {// Copy track to printable track
-                for (int j = 0; j <printableTrack[0].length ; j++) {
-                    System.out.print(printableTrack[i][j]);
-                }
-                System.out.println();
+            int bestAction = findBestAction(q, posI, posJ, iVel,jVel);
 
-            }
-
-            for (int k = 0; k < actions.length; k++) {
-                double action = q[posI][posJ][iVel][jVel][k];
-
-                if (action > bestAction){
-                    bestAction = action;
-                    move = k;
-
-                }
+            if (track[posI][posJ] == 'F'){
+                System.out.println("Finished in: " + numSteps);
             }
 
 
 
-            int [] nextMove = getNextAction(posI, posJ, iVel, jVel,actions[move] .getIAcceleration(),actions[move].getJAcceleration(), wallMode);
+            int [] nextMove = getNextAction(posI, posJ, iVel, jVel, actions[bestAction].getIAcceleration(), actions[bestAction].getJAcceleration(), wallMode);
 
             posI = nextMove[0];
             posJ = nextMove[1];
             iVel = nextMove[2];
             jVel = nextMove[3];
-            
+
         }
         
 
+    }
+    public double[][][][][] getModel(){
+        return q;
     }
 
 
