@@ -10,7 +10,7 @@ public class Main {
         vi.loadTrack(r.getRacetrack());
         vi.startLearningValueIteration(1000, 0);
         System.out.println("Done Learning");
-        Timetrial tt = new Timetrial(vi.getModel(), r.getRacetrack(), 0);
+        Timetrial tt = new Timetrial(vi.getModel(), r.getRacetrack());
         tt.runTrack(20, 0);
         //vi.runTimeTrial();
 
@@ -20,7 +20,7 @@ public class Main {
 //        QLearning ql = new QLearning();
 //        ql.loadTrack(r1.getRacetrack());
 //        ql.startLearning(100000, 0);
-//        Timetrial tt = new Timetrial(ql.getModel(), r1.getRacetrack(), 0);
+//        Timetrial tt = new Timetrial(ql.getModel(), r1.getRacetrack());
 //        tt.runTrack(20, 0);
     }
 }

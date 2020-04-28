@@ -9,13 +9,11 @@ public class Timetrial extends LearningBase {
     private double[][][][][] model;
     private Action[] actions;
     private int maxSteps = 0;
-    private int wallMode;
 
-    public Timetrial(double[][][][][] model, char[][] track, int mode){
+    public Timetrial(double[][][][][] model, char[][] track){
         this.model = model;
         this.track = track;
         actions = initializeActions();
-        this.wallMode = mode;
     }
 
     public void runTrack(int numberOfRaces, int wallMode){
