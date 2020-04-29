@@ -16,6 +16,14 @@ public class Timetrial extends LearningBase {
         actions = initializeActions();
     }
 
+    /**
+     * Parameters:
+     * int numberOfRaces: the number of races to run
+     * int wallMode: if the car should return to start or not after colliding with a wall
+     *
+     * runTrack: Runs the Q-Learning timeTrial
+     *
+     */
     public void runTrack(int numberOfRaces, int wallMode){
         ArrayList<int[]> startIndexes = findStartIndices(track);
         ArrayList<int[]> finishIndexes = findFinishIndices(track);

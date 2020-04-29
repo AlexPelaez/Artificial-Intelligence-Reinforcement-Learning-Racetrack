@@ -8,29 +8,43 @@ public class QLearning extends LearningBase {
     private double[][][][][] q;
     private Action[] actions;
     double learningRate = .3;
-    double dr = .8;
+    double dr = .85;
     int reward = -1;
     int maxSteps = 500;
 
     int numberOfCompletions = 0;
 
+    /**
+     * Parameters:
+     * char[][] track: data structure representing the track
+     *
+     * loadEvidence: Loads evidence into the Q-Learning algorithm
+     *
+     */
     public void loadTrack(char[][] track){
         this.track = track;
     }
 
+    /**
+     * Parameters:
+     * int numberOfEpisodes: How many times the learning process should iterate
+     * int wallMode: if colliding with a wall sends the agent back to the start
+     *
+     * startLearning: begins Q-Learning process
+     *
+     */
     public void startLearning(int numberOfEpisodes, int wallMode){
         q = new double[track.length][track[0].length][11][11][9];
         ArrayList<int[]> startIndexes = findStartIndices(track);
         ArrayList<int[]> finishIndexes = findFinishIndices(track);
         q = initializeQ(track, q);
         actions = initializeActions();
-        for (int e = 0; e < numberOfEpisodes; e++) {
-            System.out.println(e);
+        for (int e = 0; e < numberOfEpisodes; e++) {   // run the number of episodes
             boolean crossedFinish = false;
             int randomStart = (int)(Math.random()*startIndexes.size());
             QCar car = new QCar(startIndexes.get(randomStart)[0], startIndexes.get(randomStart)[1], track);
             int steps = 0;
-            while(crossedFinish == false){
+            while(crossedFinish == false){ // keep going until car hits finish line
                 steps++;
                 if(steps == maxSteps){
                     System.out.println("Failed");
@@ -45,7 +59,7 @@ public class QLearning extends LearningBase {
                 } if(currentCarJVel < 0){
                     currentCarJVel = (-1)*currentCarJVel+5;
                 }
-
+                // grab the best action
                 int actionToTake = findBestAction(q, currentCarI, currentCarJ, currentCarIVel, currentCarJVel);
 
                 double probability = Math.random();
@@ -58,7 +72,6 @@ public class QLearning extends LearningBase {
                 if(taken != 0){
                     q[currentCarI][currentCarJ][currentCarIVel][currentCarIVel][actionToTake] = 0;
                 } if(taken == -1 && wallMode == -1) {
-                    // here is where we will implement hit-wall -> back to start
                     // 33
                     if (e > 10000){
                         car.setI(9);
@@ -109,6 +122,13 @@ public class QLearning extends LearningBase {
     }
 
 
+    /**
+     *
+     * getModel: Returns the learned model
+     *
+     * Returns:
+     * double[][][][][]: the model Q
+     */
     public double[][][][][] getModel(){
         return q;
     }

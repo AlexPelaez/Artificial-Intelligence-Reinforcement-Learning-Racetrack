@@ -17,6 +17,16 @@ public class QCar {
         jVel = 0;
     }
 
+    /**
+     * Parameters:
+     * aI: acceleration in the I direction
+     * aJ: acceleration in the J direction
+     *
+     * changeVelocity: Changes the velocity of the car
+     *
+     * Returns:
+     * boolean: true if all velocity could be changed false otherwise
+     */
     private boolean changeVelocity(int aI, int aJ){
         // set new velocities
         int tempiV = iVel+aI;
@@ -30,7 +40,15 @@ public class QCar {
         return true;
     }
 
-
+    /**
+     * Parameters:
+     * Action a: action to be taken
+     *
+     * takeAction: Loads evidence into the network
+     *
+     * Returns:
+     * int: if action could be taken or not. If not returns the reason
+     */
     public int takeAction(Action a) {
         if(changeVelocity(a.getIAcceleration(), a.getJAcceleration())){
             i += iVel;
@@ -51,11 +69,7 @@ public class QCar {
 
     }
 
-    public void undoAction(Action a) {
-
-    }
-
-
+    // Getters and setters for various instance variables
     public int getI() {
         return i;
     }

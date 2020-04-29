@@ -11,6 +11,10 @@ public class Racetrack {
         printTrack();
     }
 
+    /**
+     *
+     * createTrack: creates a char[][] representing the track
+     */
     private void createTrack() {
         try{
             Scanner s = new Scanner(file);
@@ -31,6 +35,12 @@ public class Racetrack {
         }
 
     }
+
+    /**
+     *
+     * printTrack:  prints the racetrack
+     *
+     */
     private void printTrack() {
         for(int i = 0; i < racetrack.length; i++){
             for(int j = 0; j < racetrack[0].length; j++){
@@ -40,6 +50,12 @@ public class Racetrack {
         }
     }
 
+    /**
+     * getRacetrack: Gets the racetrack datastructure
+     *
+     * Returns:
+     * char[][]: racetrack datastructure
+     */
     public char[][] getRacetrack() {
         return racetrack;
     }

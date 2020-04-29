@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
 
         // Value Iteration
-//        Racetrack r = new Racetrack("/Users/ethanmiller/Desktop/CSCI446/Project4/Artificial-Intelligence-Reinforcement-Learning-Racetrack/src/inputs/L-track.txt");
+//        Racetrack r = new Racetrack("/Users/Alex/Documents/School/AI/Artificial-Intelligence-Reinforcement-Learning-Racetrack/src/inputs/O-track.txt");
 //        ValueIteration vi = new ValueIteration();
 //        vi.loadTrack(r.getRacetrack());
 //        vi.startLearningValueIteration(50, -1);
