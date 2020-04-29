@@ -30,7 +30,7 @@ public class ValueIteration extends LearningBase {
         actions = initializeActions();
 
 
-        while(learningStep < numOfEpisodes){
+        while(learningStep <= numOfEpisodes){
             learningStep++;
 
            double[][][][]prev_v = new double[track.length][track[0].length][11][11];
@@ -169,7 +169,7 @@ public class ValueIteration extends LearningBase {
         int [] newNew = new int[4];
 
         if (prevvi > 5){
-            int tempPrevVI = (previ - 5) * (-1);
+            prevvi = (previ - 5) * (-1);
         }
         if (prevvj > 5){
             prevvj = (prevj - 5) * (-1);
@@ -207,44 +207,25 @@ public class ValueIteration extends LearningBase {
 
 
 
-        try {
-            if (track[newi][newj] != '.' && track[newi][newj] != 'S' && track[newi][newj] != 'F' ) {//a crash has occurred
+
+        if (newi > track.length || newi < 0 || newj > track[0].length || newj < 0 || track[newi][newj] == '#' ) {//a crash has occurred
 //                System.out.println("crash occurred");
-                if (crash != -1) {//if crash does not restart car
+            if (crash != -1) {//if crash does not restart car
                     newi = previ;
                     newj = prevj;
 
-                } else {
+            } else {
                     int startFresh[] = getNewStart();
                     newi = startFresh[0];
                     newj = startFresh[1];
                     newvi = 0;
                     newvj = 0;
 
-                }
-
-
             }
-        }catch (IndexOutOfBoundsException e){
-//            System.out.println("tried to travel out of bounds");
-            if (crash != -1) {//if crash does not restart car
-                newi = previ;
-                newj = prevj;
-
-            } else {
-                int startFresh[] = getNewStart();
-                newi = startFresh[0];
-                newj = startFresh[1];
-                newvi = 0;
-                newvj = 0;
-
-
-
-            }
-
 
 
         }
+
 
         if(newvi < 0){
             newvi =(-1) *  newvi + 5;
@@ -283,7 +264,6 @@ public class ValueIteration extends LearningBase {
 
         int iVel = 0;
         int jVel = 0;
-        int stopcounter = 0;
 
 
         while(numSteps < 1000){

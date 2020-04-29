@@ -8,7 +8,7 @@ public class Timetrial extends LearningBase {
     private char[][] track;
     private double[][][][][] model;
     private Action[] actions;
-    private int maxSteps = 0;
+    private int maxSteps = 500;
 
     public Timetrial(double[][][][][] model, char[][] track){
         this.model = model;
