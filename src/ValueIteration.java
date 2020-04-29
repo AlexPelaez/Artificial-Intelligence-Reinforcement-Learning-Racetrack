@@ -95,8 +95,21 @@ public class ValueIteration extends LearningBase {
 
 
                             }
-                            int bestAction = findBestAction(q, i, j, vi, vj);
-                            v[i][j][vi][vj] = q[i][j][vi][vj][bestAction];
+
+                            double bestAction = Double.NEGATIVE_INFINITY;
+                            int move = -1;
+
+                            for (int k = 0; k < actions.length; k++) {
+                                double action = q[i][j][vi][vj][k];
+
+                                if (action > bestAction){
+                                    bestAction = action;
+                                    move = k;
+
+                                }
+                            }
+
+                            v[i][j][vi][vj] = q[i][j][vi][vj][move];
 
                         }
                     }
@@ -208,7 +221,7 @@ public class ValueIteration extends LearningBase {
 
 
 
-        if (newi > track.length || newi < 0 || newj > track[0].length || newj < 0 || track[newi][newj] == '#' ) {//a crash has occurred
+        if (newi >= track.length || newi < 0 || newj >= track[0].length || newj < 0 || track[newi][newj] == '#' ) {//a crash has occurred
 //                System.out.println("crash occurred");
             if (crash != -1) {//if crash does not restart car
                     newi = previ;
@@ -244,17 +257,16 @@ public class ValueIteration extends LearningBase {
         return newNew;
     }
 
-    public void runTimeTrial(){
+    public void doTimeTrial(){
         int numSteps = 0;
-        
-        char [][]printableTrack = new char[track.length][track[0].length];
 
+        char [][]printableTrack = new char[track.length][track[0].length];
 
         for (int i = 0; i < track.length ; i++) {// Copy track to printable track
             for (int j = 0; j <track[0].length ; j++) {
                 printableTrack[i][j] = track[i][j];
             }
-            
+
         }
 
         int []start = getNewStart();
@@ -266,19 +278,43 @@ public class ValueIteration extends LearningBase {
         int jVel = 0;
 
 
-        while(numSteps < 1000){
+        while(numSteps < 500){
+            System.out.println(numSteps);
             numSteps++;
 
+            double bestAction = Double.NEGATIVE_INFINITY;
+            int move = -1;
 
-            int bestAction = findBestAction(q, posI, posJ, iVel,jVel);
+            if(track[posI][posJ] == 'F'){
 
-            if (track[posI][posJ] == 'F'){
-                System.out.println("Finished in: " + numSteps);
+                System.out.println("FUCK YES");
+                System.out.println(numSteps);
+                break;
+            }
+
+            printableTrack[posI][posJ] = 'X';
+
+            for (int i = 0; i < printableTrack.length ; i++) {// Copy track to printable track
+                for (int j = 0; j <printableTrack[0].length ; j++) {
+                    System.out.print(printableTrack[i][j]);
+                }
+                System.out.println();
+
+            }
+
+            for (int k = 0; k < actions.length; k++) {
+                double action = q[posI][posJ][iVel][jVel][k];
+
+                if (action > bestAction){
+                    bestAction = action;
+                    move = k;
+
+                }
             }
 
 
 
-            int [] nextMove = getNextAction(posI, posJ, iVel, jVel, actions[bestAction].getIAcceleration(), actions[bestAction].getJAcceleration(), wallMode);
+            int [] nextMove = getNextAction(posI, posJ, iVel, jVel,actions[move] .getIAcceleration(),actions[move].getJAcceleration(), wallMode);
 
             posI = nextMove[0];
             posJ = nextMove[1];
@@ -286,9 +322,10 @@ public class ValueIteration extends LearningBase {
             jVel = nextMove[3];
 
         }
-        
+
 
     }
+
     public double[][][][][] getModel(){
         return q;
     }
