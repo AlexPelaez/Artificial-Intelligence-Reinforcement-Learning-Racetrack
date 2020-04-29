@@ -11,6 +11,7 @@ public class QLearning extends LearningBase {
     double dr = .85;
     int reward = -1;
     int maxSteps = 500;
+    int wallMode = 0;
 
     int numberOfCompletions = 0;
 
@@ -111,7 +112,7 @@ public class QLearning extends LearningBase {
 //                printTrack(car.getI(), car.getJ());
 
                 if(track[car.getI()][car.getJ()] == 'F') {
-                    printTrack(track, car.getI(), car.getJ());
+//                    printTrack(track, car.getI(), car.getJ());
                     crossedFinish = true;
                     System.out.println("were finished!");
                     numberOfCompletions++;
@@ -132,4 +133,5 @@ public class QLearning extends LearningBase {
     public double[][][][][] getModel(){
         return q;
     }
+
 }

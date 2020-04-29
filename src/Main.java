@@ -17,7 +17,7 @@ public class Main {
 //       Racetrack r1 = new Racetrack("/Users/Alex/Documents/School/AI/Artificial-Intelligence-Reinforcement-Learning-Racetrack/src/inputs/L-track.txt");
 //        QLearning ql = new QLearning();
 //        ql.loadTrack(r1.getRacetrack());
-//        ql.startLearning(100000, 0);
+//        ql.startLearning(1000000, 0);
 //        Timetrial tt = new Timetrial(ql.getModel(), r1.getRacetrack());
 //        tt.runTrack(20, 0);
     }
